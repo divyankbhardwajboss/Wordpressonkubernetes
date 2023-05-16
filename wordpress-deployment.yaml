@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress
+spec:
+  selector:
+    matchLabels:
+      app: wordpress
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: wordpress
+    spec:
+      containers:
+      - name
+- name: wordpress
+    image: your-registry/your-image:latest
+    ports:
+    - containerPort: 9000
+    env:
+    - name: WORDPRESS_DB_HOST
+      value: "mysql"
+    - name: WORDPRESS_DB_USER
+      valueFrom:
+        secretKeyRef:
+          name: mysql
+          key: username
+    - name: WORDPRESS_DB_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: mysql
+          key: password
+    - name: WORDPRESS_DB_NAME
+      valueFrom:
+        configMapKeyRef:
+          name: wordpress
+          key: database_name
+    volumeMounts:
+    - name: wordpress-content
+      mountPath: /var/www/html/wp-content
+  volumes:
+  - name: wordpress-content
+    persistentVolumeClaim:
+      claimName: wordpress-content
+apiVersion: v1
+kind: Service
+metadata:
+name: wordpress
+spec:
+selector:
+app: wordpress
+ports:
+
+name: http
+port: 80
+targetPort: 9000
+type: LoadBalancer
