@@ -3,51 +3,7 @@ The first step in deploying a WordPress website is to set up a MySQL database. T
 
 Create a file called mysql-deployment.yaml and add the following contents:
 
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: mysql
-spec:
-  selector:
-    matchLabels:
-      app: mysql
-  strategy:
-    type: Recreate
-  template:
-    metadata:
-      labels:
-        app: mysql
-    spec:
-      containers:
-      - image: mysql:5.7
-        name: mysql
-        env:
-        - name: MYSQL_ROOT_PASSWORD
-          value: yourpassword
-        - name: MYSQL_DATABASE
-          value: wordpress
-        ports:
-        - containerPort: 3306
-          name: mysql
-        volumeMounts:
-        - name: mysql-persistent-storage
-          mountPath: /var/lib/mysql
-      volumes:
-      - name: mysql-persistent-storage
-        persistentVolumeClaim:
-          claimName: mysql-pv-claim
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: mysql
-spec:
-  ports:
-  - name: mysql
-    port: 3306
-    targetPort: 3306
-  selector:
-    app: mysql
+
 This YAML file creates a deployment and service for the MySQL database. It uses the official MySQL Docker image and sets the MySQL root password and database name using environment variables. It also creates a persistent volume claim to store the MySQL data.
 
 To create the MySQL deployment and service, run the following command:
